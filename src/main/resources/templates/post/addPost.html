@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Post</title>
+</head>
+<body>
+<form th:method="POST"  th:action="@{/post/aa}" th:object="${post}">
+    <label for="post_header">Name</label>
+    <p th:if="${#fields.hasErrors('post_header')}" th:errors="*{post_header}" >error</p>
+    <input type="text" th:field="*{post_header}" id="post_header">
+    <br/>
+
+    <label for="post_body">Age</label>
+    <p th:if="${#fields.hasErrors('post_body')}" th:errors="*{post_body}" >error</p>
+    <input type="text" th:field="*{post_body}" id="post_body">
+    <br/>
+
+    <label for="post_city">Age</label>
+    <p th:if="${#fields.hasErrors('post_city')}" th:errors="*{post_city}" >error</p>
+    <input type="text" th:field="*{post_city}" id="post_city">
+    <br/>
+
+    <label for="post_type">Age</label>
+    <p th:if="${#fields.hasErrors('post_type')}" th:errors="*{post_type}" >error</p>
+    <input type="text" th:field="*{post_type}" id="post_type">
+    <br/>
+
+    <label for="post_start_day">Age</label>
+    <p th:if="${#fields.hasErrors('posts_start_day')}" th:errors="*{posts_start_day}" >error</p>
+    <input type="date" th:field="*{posts_start_day}" id="post_start_day">
+    <br/>
+
+    <label for="post_end_day">Age</label>
+    <p th:if="${#fields.hasErrors('posts_end_day')}" th:errors="*{posts_end_day}" >error</p>
+    <input type="date" th:field="*{posts_end_day}" id="post_end_day">
+    <br/>
+
+    <label for="post_requirements">Age</label>
+    <p th:if="${#fields.hasErrors('post_requirements')}" th:errors="*{post_requirements}" >error</p>
+    <input type="text" th:field="*{post_requirements}" id="post_requirements">
+    <br/>
+
+    <label for="post_offer">Age</label>
+    <p th:if="${#fields.hasErrors('post_offer')}" th:errors="*{post_offer}" >error</p>
+    <input type="text" th:field="*{post_offer}" id="post_offer">
+    <br/>
+    <input type="submit" value="Create!">
+
+
+
+
+
+</form>
+
+
+
+</body>
+</html>

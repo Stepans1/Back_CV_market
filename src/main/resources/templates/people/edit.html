@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EDIT</title>
+</head>
+<body>
+
+<form th:method="POST"  th:action="@{/people/{id}(id=${person.getId()})}" th:object="${person}">
+    <label for="name">Name</label>
+    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" >error</p>
+
+    <input type="text" th:field="*{name}" id="name">
+    <br/>
+    <label for="age">Age</label>
+    <p th:if="${#fields.hasErrors('age')}" th:errors="*{age}" >error</p>
+
+    <input type="number" th:field="*{age}" id="age">
+    <br/>
+    <input type="submit" value="Update!">
+
+
+
+
+
+</form>
+
+
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/cities" method="post">
+    <label for="selectCity">Выберите значение:</label>
+    <select id="selectCity" name="selectCity">
+        <option th:each="value : ${cities}" th:value="${value}" th:text="${value}"></option>
+    </select>
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
