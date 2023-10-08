@@ -1,7 +1,9 @@
 package com.example.BootApp.controllers;
 
+import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.dao.PersonDAO;
 import com.example.BootApp.models.Person;
+import com.example.BootApp.models.WorkType;
 import com.example.BootApp.services.PeopleService;
 import com.example.BootApp.util.PersonValidator;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("people")
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
 public class PeopleController {
 
 
@@ -42,6 +45,13 @@ public class PeopleController {
 
         return "people/index";
     }
+
+    @GetMapping("/getUsersByName")
+    @ResponseBody
+    public List<SetOwnerDTO> getUserByName(@RequestParam String name){
+      return peopleService.getByName(name);
+    }
+
 
 
     @GetMapping("/{id}")

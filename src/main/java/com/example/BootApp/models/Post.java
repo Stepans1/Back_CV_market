@@ -3,6 +3,7 @@ package com.example.BootApp.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,18 +29,18 @@ public class Post {
     @Size(min = 2,max = 100,message = "LIMIT !!!")
     @Column(name = "post_city")
     private String post_city;
-    @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
+
     @Column(name = "post_type")
     private String post_type;
 
-
+    @NotNull(message = "Must be not empty")
     @Column(name = "posts_start_day")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date posts_start_day;
 
-    @Column(name = "post_end_day")
+    @Column(name = "post_end_day",nullable = false)
+    @NotNull(message = "Must be not empty")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date posts_end_day;
@@ -51,6 +52,7 @@ public class Post {
     @Size(min = 2,max = 100,message = "LIMIT !!!")
     @Column(name = "post_offer")
     private String post_offer;
+    @NotEmpty(message = "Must be not empty")
     @Column(name = "post_contact_phone")
     private String post_contactPhone;
     @NotEmpty(message = "Must be not empty")
@@ -61,7 +63,7 @@ public class Post {
 
 
     @ManyToOne
-    @JoinColumn(name = "person_id",referencedColumnName = "id")
+    @JoinColumn(name = "person_id",referencedColumnName = "id",nullable = false)
     private Person owner;
 
     public Post(String post_header, String post_body, String post_city,

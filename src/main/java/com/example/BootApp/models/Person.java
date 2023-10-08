@@ -22,6 +22,7 @@ public class Person {
     @Column(name = "age")
     @Min(value = 18,message = "Not less than 18")
     private int age;
+
     @OneToMany(mappedBy = "owner"  ,fetch = FetchType.LAZY)
     private List<Post> posts;
 
@@ -29,10 +30,16 @@ public class Person {
         this.age=age;
         this.name = name;
     }
-
+    public Person(int id, String name,int age) {
+        this.id=id;
+        this.age=age;
+        this.name = name;
+    }
     public int getAge() {
         return age;
     }
+
+
 
     public void setAge(int age) {
         this.age = age;

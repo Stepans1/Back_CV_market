@@ -2,6 +2,7 @@ package com.example.BootApp.services;
 
 
 
+import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.models.Person;
 
 import com.example.BootApp.repo.PeopleRepositorry;
@@ -55,7 +56,11 @@ public class PeopleService {
     }
 
 
+    public List<SetOwnerDTO> getPersonToSetOwner() {
+        return peopleRepositorry.getIdAndName();
+    }
 
-
-
+    public List<SetOwnerDTO> getByName(String name) {
+        return peopleRepositorry.getPersonForSetOwner(name);
+    }
 }

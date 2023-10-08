@@ -21,21 +21,16 @@ public class PostServis {
 
 
     private final PostsRepository postsRepository;
-    private final PeopleRepositorry peopleRepositorry;
 
-    @Autowired
-    public PostServis(PostsRepository postsRepository, PeopleRepositorry peopleRepositorry) {
+
+
+    public PostServis(PostsRepository postsRepository) {
 
 
         this.postsRepository = postsRepository;
-        this.peopleRepositorry = peopleRepositorry;
+
     }
 
-
-
-    public List<Post> findByOwnre(Person person){
-        return postsRepository.findByOwner(person);
-    }
 
     public Post findOne(int id) {
         Optional<Post> foundPerson=postsRepository.findById(id);
@@ -44,18 +39,17 @@ public class PostServis {
 
     }
     @Transactional
-    public void save(Post post,int id) {
+    public void save(Post post,Person person) {
 
-
-//       Optional<Person> person= Optional.ofNullable(peopleRepositorry.findById(id).orElseThrow(PersonNotFoundEcseption::new));
-        Person person=peopleRepositorry.findById(id).orElse(null);
         post.setOwner(person);
-        postsRepository.save(post);
+
+
+         postsRepository.save(post);
     }
 
-    public List<Post> findAll() {
-        return postsRepository.findAll();
-    }
+
+
+
 
     public List<PostHeaderDTO> headers() {
         return postsRepository.selectHeaders();

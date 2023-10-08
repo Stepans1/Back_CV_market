@@ -2,8 +2,10 @@ package com.example.BootApp.controllers;
 
 import com.example.BootApp.DTO.PostHeaderDTO;
 import com.example.BootApp.DTO.ValidationErrorDTO;
+import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.models.WorkType;
+import com.example.BootApp.repo.PeopleRepositorry;
 import com.example.BootApp.repo.PostsRepository;
 import com.example.BootApp.services.PostServis;
 import com.example.BootApp.util.PostErrorResponse;
@@ -16,11 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -29,17 +31,18 @@ import java.util.stream.Collectors;
 public class PostController {
     private final PostServis postServis;
     private final PostsRepository postsRepository;
-
+    private final PeopleRepositorry peopleRepositorry;
     @Autowired
-    public PostController(PostServis postServis, PostsRepository postsRepository) {
+    public PostController(PostServis postServis, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry) {
         this.postServis = postServis;
 
         this.postsRepository = postsRepository;
+        this.peopleRepositorry = peopleRepositorry;
     }
 
-    @PostMapping("/edit/{id}")
+    @PostMapping("/edit")
     @ResponseBody
-    public ResponseEntity<?> createUser(@RequestBody @Valid Post post ,BindingResult result) {
+    public ResponseEntity<?> updatePost(@RequestBody @Valid Post post ,BindingResult result) {
         if (result.hasErrors()) {
 
             List<ValidationErrorDTO> errors = result.getFieldErrors().stream()
@@ -61,13 +64,6 @@ public class PostController {
     }
 
 
-
-
-
-
-
-
-
     @GetMapping("/getHeaders")
     @ResponseBody
     public List<PostHeaderDTO> getHeaders(){
@@ -78,7 +74,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public Post show(@PathVariable("id") int id) throws SQLException {
+    public Post show(@PathVariable("id") int id)  {
 
         return postServis.findOne(id);
     }
@@ -99,19 +95,21 @@ public class PostController {
     }
 
     @ResponseBody
-    @PostMapping("/{id}/save")
-    public ResponseEntity<HttpStatus> create(@RequestBody @Valid Post post,@PathVariable("id") int id,
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody @Valid Post post,
                                              BindingResult bindingResult){
-        if (bindingResult.hasErrors()){
-            StringBuilder errorMsg=new StringBuilder();
-            List<FieldError> errors=bindingResult.getFieldErrors();
-            for (FieldError error:errors){
-                errorMsg.append(error.getField()).append("-").append(error.getDefaultMessage()).append(";");
 
-            }
-            throw new PostNotCreatedException(errorMsg.toString());
+        if (bindingResult.hasErrors()) {
+
+            List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
+                    .map(error -> new ValidationErrorDTO(error.getField(), error.getDefaultMessage()))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors);
         }
-        postServis.save(post,id);
+
+
+        postServis.save(post,post.getOwner());
         return ResponseEntity.ok(HttpStatus.OK);
 
     }
