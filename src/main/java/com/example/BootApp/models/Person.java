@@ -16,7 +16,7 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotEmpty(message = "must be not empty")
-    @Size(min = 2,max = 30,message = "LIMIT SUKA!!!")
+    @Size(min = 2,max = 30,message = "LIMIT !!!")
     @Column(name = "name")
     private String name;
     @Column(name = "age")
