@@ -31,8 +31,8 @@ class PostsRepositoryTest {
         Date startDate = new Date();
         Date endDate = new Date();
 
-        Post post = new Post("Заголовок", "Текст объявления", "Город", "Тип", startDate, endDate,
-                "Требования", "Предложение", "example@email.com", "64545");
+        Post post = new Post("Заголовок",  "Город", "Тип", startDate, endDate,
+                "example@email.com", "64545",1221222,"skandi");
 
         Person person=new Person("Bob",22);
         post.setOwner(person);

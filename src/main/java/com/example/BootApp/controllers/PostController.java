@@ -2,16 +2,12 @@ package com.example.BootApp.controllers;
 
 import com.example.BootApp.DTO.PostHeaderDTO;
 import com.example.BootApp.DTO.ValidationErrorDTO;
-import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.models.WorkType;
 import com.example.BootApp.repo.PeopleRepositorry;
 import com.example.BootApp.repo.PostsRepository;
 import com.example.BootApp.services.PostServis;
-import com.example.BootApp.util.PostErrorResponse;
-import com.example.BootApp.util.PostNotCreatedException;
-import com.example.BootApp.util.PostNotDeleted;
-import com.example.BootApp.util.PostNotFoundException;
+import com.example.BootApp.util.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,9 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,12 +26,15 @@ public class PostController {
     private final PostServis postServis;
     private final PostsRepository postsRepository;
     private final PeopleRepositorry peopleRepositorry;
+
+    private final PostValidator postValidator;
     @Autowired
-    public PostController(PostServis postServis, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry) {
+    public PostController(PostServis postServis, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry, PostValidator postValidator) {
         this.postServis = postServis;
 
         this.postsRepository = postsRepository;
         this.peopleRepositorry = peopleRepositorry;
+        this.postValidator = postValidator;
     }
 
     @PostMapping("/edit")
@@ -93,12 +90,12 @@ public class PostController {
 
 
     }
-
     @ResponseBody
-    @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody @Valid Post post,
-                                             BindingResult bindingResult){
-
+    @PostMapping("/validate")
+    public ResponseEntity<?> validate(@RequestBody @Valid Post post,
+                                  BindingResult bindingResult){
+        postValidator.validate(post,bindingResult);
+        System.out.println(post.getOwner().getId());
         if (bindingResult.hasErrors()) {
 
             List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
@@ -107,6 +104,27 @@ public class PostController {
 
             return ResponseEntity.badRequest().body(errors);
         }
+
+
+        return ResponseEntity.ok(HttpStatus.OK);
+
+    }
+
+    @ResponseBody
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody @Valid Post post,
+                                             BindingResult bindingResult){
+        postValidator.validate(post,bindingResult);
+        System.out.println(post.getOwner().getId());
+        if (bindingResult.hasErrors()) {
+
+            List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
+                    .map(error -> new ValidationErrorDTO(error.getField(), error.getDefaultMessage()))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors);
+        }
+
 
 
         postServis.save(post,post.getOwner());

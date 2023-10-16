@@ -19,7 +19,7 @@ public interface PostsRepository extends JpaRepository<Post,Integer> {
     List<Post>findByOwner(Person owner);
 
 
-    @Query("SELECT new com.example.BootApp.DTO.PostHeaderDTO(p.id, p.post_header) FROM Post p")
+    @Query("SELECT new com.example.BootApp.DTO.PostHeaderDTO(p.id, p.post_header,p.post_type,p.salary,p.company) FROM Post p")
     List<PostHeaderDTO> selectHeaders();
 
 

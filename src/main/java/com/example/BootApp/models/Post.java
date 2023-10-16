@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Entity
-@Table(name = "post")
+@Table(name = "post_mandatory")
 public class Post {
     @Id
     @Column(name = "id")
@@ -21,15 +21,13 @@ public class Post {
     @Size(min = 2,max = 100,message = "LIMIT !!!")
     @Column(name = "post_header")
     private String post_header;
-    @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
-    @Column(name = "post_body")
-    private String post_body;
+
     @NotEmpty(message = "Must be not empty")
     @Size(min = 2,max = 100,message = "LIMIT !!!")
     @Column(name = "post_city")
     private String post_city;
 
+    @NotEmpty(message ="Must be not empty" )
     @Column(name = "post_type")
     private String post_type;
 
@@ -44,14 +42,7 @@ public class Post {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date posts_end_day;
-    @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
-    @Column(name = "post_requirements")
-    private String post_requirements;
-    @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
-    @Column(name = "post_offer")
-    private String post_offer;
+
     @NotEmpty(message = "Must be not empty")
     @Column(name = "post_contact_phone")
     private String post_contactPhone;
@@ -59,26 +50,32 @@ public class Post {
     @Email(message = "Please provide correct email ")
     @Column(name = "post_email")
     private String post_email;
+    @Column(name = "salary")
+    @NotNull(message = "Must be not empty")
+    private Integer salary;
 
 
+
+    @NotEmpty(message = "Must be not empty")
+    @Column(name = "company")
+    private String company;
 
     @ManyToOne
     @JoinColumn(name = "person_id",referencedColumnName = "id",nullable = false)
     private Person owner;
 
-    public Post(String post_header, String post_body, String post_city,
+    public Post(String post_header, String post_city,
                 String post_type, Date posts_start_day, Date posts_end_day,
-                String post_requirements, String post_offer,String post_email,String post_contactPhone) {
+               String post_email,String post_contactPhone,Integer salary,String company) {
         this.post_header = post_header;
-        this.post_body = post_body;
         this.post_city = post_city;
         this.post_type = post_type;
         this.posts_start_day = posts_start_day;
         this.posts_end_day = posts_end_day;
-        this.post_requirements = post_requirements;
-        this.post_offer = post_offer;
         this.post_email=post_email;
         this.post_contactPhone=post_contactPhone;
+        this.salary=salary;
+        this.company=company;
 
     }
 
@@ -87,6 +84,26 @@ public class Post {
 
     }
 
+
+    public Integer getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Integer salary) {
+        this.salary = salary;
+    }
+
+
+
+
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
 
     public Person getOwner() {
         return owner;
@@ -115,13 +132,7 @@ public class Post {
         this.post_header = post_header;
     }
 
-    public String getPost_body() {
-        return post_body;
-    }
 
-    public void setPost_body(String post_body) {
-        this.post_body = post_body;
-    }
 
     public String getPost_city() {
         return post_city;
@@ -155,21 +166,7 @@ public class Post {
         this.posts_end_day = posts_end_day;
     }
 
-    public String getPost_requirements() {
-        return post_requirements;
-    }
 
-    public void setPost_requirements(String post_requirements) {
-        this.post_requirements = post_requirements;
-    }
-
-    public String getPost_offer() {
-        return post_offer;
-    }
-
-    public void setPost_offer(String post_offer) {
-        this.post_offer = post_offer;
-    }
 
     public String getPost_contactPhone() {
         return post_contactPhone;
