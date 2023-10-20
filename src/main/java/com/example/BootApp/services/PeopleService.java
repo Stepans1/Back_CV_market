@@ -6,8 +6,12 @@ import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.models.Person;
 
 import com.example.BootApp.repo.PeopleRepositorry;
+import com.example.BootApp.secutity.PersonDetails;
 import com.example.BootApp.util.PostNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +20,7 @@ import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
-public class PeopleService {
+public class PeopleService implements UserDetailsService {
 
     private final PeopleRepositorry peopleRepositorry;
 
@@ -62,5 +66,15 @@ public class PeopleService {
 
     public List<SetOwnerDTO> getByName(String name) {
         return peopleRepositorry.getPersonForSetOwner(name);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Person> person=peopleRepositorry.findByName(username);
+
+        if (person.isEmpty()){
+            throw new UsernameNotFoundException("User not found");
+        }
+        return new PersonDetails(person.get());
     }
 }

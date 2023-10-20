@@ -1,5 +1,6 @@
 package com.example.BootApp.controllers;
 
+import com.example.BootApp.DTO.AddPostDTO;
 import com.example.BootApp.DTO.PostHeaderDTO;
 import com.example.BootApp.DTO.ValidationErrorDTO;
 import com.example.BootApp.models.Post;
@@ -115,7 +116,6 @@ public class PostController {
     public ResponseEntity<?> save(@RequestBody @Valid Post post,
                                              BindingResult bindingResult){
         postValidator.validate(post,bindingResult);
-        System.out.println(post.getOwner().getId());
         if (bindingResult.hasErrors()) {
 
             List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
@@ -129,6 +129,18 @@ public class PostController {
 
         postServis.save(post,post.getOwner());
         return ResponseEntity.ok(HttpStatus.OK);
+
+    }
+
+    @ResponseBody
+    @PostMapping("/testSave")
+    public AddPostDTO testsave(@RequestBody  AddPostDTO addPostDTO,
+                                  BindingResult bindingResult){
+
+      //  System.out.println(addPostDTO.getPost_city());
+
+
+        return addPostDTO;
 
     }
 

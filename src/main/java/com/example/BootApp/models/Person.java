@@ -17,32 +17,32 @@ public class Person {
     private int id;
     @NotEmpty(message = "must be not empty")
     @Size(min = 2,max = 30,message = "LIMIT !!!")
-    @Column(name = "name")
+    @Column(name = "username")
     private String name;
-    @Column(name = "age")
-    @Min(value = 18,message = "Not less than 18")
-    private int age;
+    @Column(name = "password")
+    @Size(min = 8,max = 30,message = "LIMIT !!!")
+    private String password;
 
     @OneToMany(mappedBy = "owner"  ,fetch = FetchType.LAZY)
     private List<Post> posts;
 
-    public Person( String name,int age) {
-        this.age=age;
+    public Person( String name,String password) {
+        this.password=password;
         this.name = name;
     }
-    public Person(int id, String name,int age) {
+    public Person(int id, String name,String password) {
         this.id=id;
-        this.age=age;
+        this.password=password;
         this.name = name;
     }
-    public int getAge() {
-        return age;
+    public String getPassword() {
+        return password;
     }
 
 
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Person() {
@@ -64,5 +64,8 @@ public class Person {
         this.name = name;
     }
 
-
+    @Override
+    public String toString() {
+        return "Name"+getName()+"Password"+getPassword();
+    }
 }

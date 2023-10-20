@@ -4,11 +4,15 @@ import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.dao.PersonDAO;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.WorkType;
+import com.example.BootApp.secutity.PersonDetails;
 import com.example.BootApp.services.PeopleService;
 import com.example.BootApp.util.PersonValidator;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,11 +37,6 @@ public class PeopleController {
 
         this.personValidator = personValidator;
     }
-
-
-
-
-
     @GetMapping("")
     public String index( Model model) throws SQLException {
 
@@ -45,6 +44,17 @@ public class PeopleController {
 
         return "people/index";
     }
+    @GetMapping("/getUserInfo")
+    public String getUserInfo(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        PersonDetails personDetails=(PersonDetails) authentication.getPrincipal();
+        System.out.println(personDetails.getPerson());
+        return "people/index";
+    }
+
+
+
+
 
     @GetMapping("/getUsersByName")
     @ResponseBody
