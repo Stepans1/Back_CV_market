@@ -1,4 +1,4 @@
-package com.example.BootApp.controllers;
+package com.example.BootApp.resources;
 
 
 import com.example.BootApp.dao.PersonDAO;

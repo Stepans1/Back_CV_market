@@ -1,5 +1,6 @@
 package com.example.BootApp.util;
 
+import com.example.BootApp.DTO.ValidatePostDTO;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.repo.PostsRepository;
@@ -22,12 +23,12 @@ public class PostValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        Post post=(Post) target;
+        ValidatePostDTO post=(ValidatePostDTO) target;
+            if (post.getOwner().getId()==0){
+                errors.rejectValue("owner","","Chose the owner please :)");
+            }
 
-        if (post.getOwner().getId()==0){
-            errors.rejectValue("owner","","Chose the owner please :)");
 
-        }
 
 
 

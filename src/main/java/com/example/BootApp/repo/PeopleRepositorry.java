@@ -17,12 +17,12 @@ import java.util.Optional;
 public interface PeopleRepositorry extends JpaRepository<Person,Integer> {
 
 
-    Optional<Person> findByName(String name);
+    Optional<Person> findByUsername(String u);
 
 
-    @Query("SELECT new com.example.BootApp.DTO.SetOwnerDTO(p.id, p.name) FROM Person p where p.name LIKE :name%")
+    @Query("SELECT new com.example.BootApp.DTO.SetOwnerDTO(p.id, p.username) FROM Person p where p.username LIKE :name%")
     List<SetOwnerDTO> getPersonForSetOwner(@Param("name") String name);
 
-    @Query("SELECT new com.example.BootApp.DTO.SetOwnerDTO(p.id, p.name) FROM Person p")
+    @Query("SELECT new com.example.BootApp.DTO.SetOwnerDTO(p.id, p.username) FROM Person p")
     List<SetOwnerDTO> getIdAndName();
 }

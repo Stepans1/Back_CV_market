@@ -1,73 +1,62 @@
 package com.example.BootApp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "Person")
 public class Person {
 
 
 
+    @Getter
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+
     @NotEmpty(message = "must be not empty")
     @Size(min = 2,max = 30,message = "LIMIT !!!")
-    @Column(name = "username")
-    private String name;
-    @Column(name = "password")
-    @Size(min = 8,max = 30,message = "LIMIT !!!")
-    private String password;
+    @Column(name = "name")
+    private String username;
 
+    @Column(name = "yourdescription")
+    @Size(min = 8,max = 30,message = "LIMIT !!!")
+    private String yourdescription;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "owner"  ,fetch = FetchType.LAZY)
     private List<Post> posts;
 
-    public Person( String name,String password) {
-        this.password=password;
-        this.name = name;
+    public Person( String username,String yourdescription) {
+        this.yourdescription=yourdescription;
+        this.username = username;
     }
-    public Person(int id, String name,String password) {
+    public Person(int id, String username,String yourdescription) {
         this.id=id;
-        this.password=password;
-        this.name = name;
-    }
-    public String getPassword() {
-        return password;
-    }
-
-
-
-    public void setPassword(String password) {
-        this.password = password;
+        this.yourdescription=yourdescription;
+        this.username = username;
     }
 
     public Person() {
 
     }
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public String toString() {
-        return "Name"+getName()+"Password"+getPassword();
+        return "Name"+getUsername()+"YourDescription"+getYourdescription();
     }
 }

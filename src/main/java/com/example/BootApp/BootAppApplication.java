@@ -1,14 +1,14 @@
 package com.example.BootApp;
 
-import com.example.BootApp.models.Person;
-import com.example.BootApp.repo.PeopleRepositorry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Arrays;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 
 @SpringBootApplication
 public class BootAppApplication {
+
 
 
 

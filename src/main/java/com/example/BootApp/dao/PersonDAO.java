@@ -50,7 +50,7 @@ public class PersonDAO {
     public void update(int id ,Person updatePerson) throws SQLException {
         Session session=sessionFactory.getCurrentSession();
         Person person=session.get(Person.class,id);
-        person.setName(updatePerson.getName());
+        person.setUsername(updatePerson.getUsername());
 
 
     }

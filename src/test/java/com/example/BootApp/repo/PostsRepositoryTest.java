@@ -34,7 +34,7 @@ class PostsRepositoryTest {
         Post post = new Post("Заголовок",  "Город", "Тип", startDate, endDate,
                 "example@email.com", "64545",1221222,"skandi");
 
-        Person person=new Person("Bob",22);
+        Person person=new Person("Bob","22");
         post.setOwner(person);
         peopleRepositorry.save(person);
         postsRepository.save(post);

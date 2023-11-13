@@ -1,80 +1,34 @@
 package com.example.BootApp.services;
 
-
-
 import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.models.Person;
-
-import com.example.BootApp.repo.PeopleRepositorry;
-import com.example.BootApp.secutity.PersonDetails;
-import com.example.BootApp.util.PostNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Optional;
-
-@Service
-@Transactional(readOnly = true)
-public class PeopleService implements UserDetailsService {
-
-    private final PeopleRepositorry peopleRepositorry;
-
-    @Autowired
-    public PeopleService(PeopleRepositorry peopleRepositorry) {
-        this.peopleRepositorry = peopleRepositorry;
-
-    }
 
 
-    public List<Person> findAll(){
-        return peopleRepositorry.findAll();
-    }
-
-    public Person findOne(int id){
-        Optional<Person> foundPerson=peopleRepositorry.findById(id);
-
-        return foundPerson.orElseThrow(PostNotFoundException::new);
-    }
-
-    @Transactional
-    public void save(Person person){
-        peopleRepositorry.save(person);
-
-    }
-
-    @Transactional
-    public void update(int id,Person updatesPeron){
-        updatesPeron.setId(id);
-        peopleRepositorry.save(updatesPeron);
-    }
+public interface PeopleService  {
 
 
-    @Transactional
-    public void del(int id){
-        peopleRepositorry.deleteById(id);
-    }
 
 
-    public List<SetOwnerDTO> getPersonToSetOwner() {
-        return peopleRepositorry.getIdAndName();
-    }
+    public List<Person> findAll();
 
-    public List<SetOwnerDTO> getByName(String name) {
-        return peopleRepositorry.getPersonForSetOwner(name);
-    }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Person> person=peopleRepositorry.findByName(username);
 
-        if (person.isEmpty()){
-            throw new UsernameNotFoundException("User not found");
-        }
-        return new PersonDetails(person.get());
-    }
+    public Person findOne(int id);
+
+
+
+
+    public void save(Person person);
+
+
+    public void update(int id,Person updatesPeron);
+
+
+    public void del(int id);
+
+
+    public List<SetOwnerDTO> getPersonToSetOwner();
+
+    public List<SetOwnerDTO> getByName(String name) ;
 }

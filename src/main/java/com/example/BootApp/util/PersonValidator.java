@@ -29,7 +29,7 @@ public class PersonValidator implements Validator {
     public void validate(Object target, Errors errors) {
         Person person =(Person) target;
 
-        if (peopleRepositorry.findByName(person.getName()).isPresent()){
+        if (peopleRepositorry.findByUsername(person.getUsername()).isPresent()){
             errors.rejectValue("name","","Name is already taken");
         }
 

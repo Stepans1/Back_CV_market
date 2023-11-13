@@ -1,22 +1,33 @@
-package com.example.BootApp.controllers;
+package com.example.BootApp.resources;
 
-import com.example.BootApp.DTO.AddPostDTO;
-import com.example.BootApp.DTO.PostHeaderDTO;
-import com.example.BootApp.DTO.ValidationErrorDTO;
+import com.example.BootApp.DTO.*;
+import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.models.WorkType;
 import com.example.BootApp.repo.PeopleRepositorry;
 import com.example.BootApp.repo.PostsRepository;
-import com.example.BootApp.services.PostServis;
+import com.example.BootApp.secutity.AccountAuthenticationProvider;
+import com.example.BootApp.secutity.AccountDetails;
+import com.example.BootApp.services.impl.PostServisImpl;
 import com.example.BootApp.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,17 +35,20 @@ import java.util.stream.Collectors;
 @RequestMapping("post")
 @CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST}, allowedHeaders = "*")
 public class PostController {
-    private final PostServis postServis;
+    private final PostServisImpl postServisImpl;
     private final PostsRepository postsRepository;
     private final PeopleRepositorry peopleRepositorry;
 
+
     private final PostValidator postValidator;
+    public static String UPLOAD_DIRECTORY = System.getProperty("BootApp/images") + "/uploads";
     @Autowired
-    public PostController(PostServis postServis, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry, PostValidator postValidator) {
-        this.postServis = postServis;
+    public PostController(PostServisImpl postServisImpl, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry,  PostValidator postValidator) {
+        this.postServisImpl = postServisImpl;
 
         this.postsRepository = postsRepository;
         this.peopleRepositorry = peopleRepositorry;
+
         this.postValidator = postValidator;
     }
 
@@ -51,7 +65,7 @@ public class PostController {
         }
 
 
-        postServis.update(post.getId(),post);
+        postServisImpl.update(post.getId(),post);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -64,17 +78,42 @@ public class PostController {
 
     @GetMapping("/getHeaders")
     @ResponseBody
-    public List<PostHeaderDTO> getHeaders(){
-        return postServis.headers();
+    public ResponseEntity<List<PostHeaderDTO>> getHeaders(){
+        return ResponseEntity.ok(postServisImpl.headers());
+    }
+
+
+    @GetMapping("/all")
+    @ResponseBody
+    public ResponseEntity<List<Post>> all(){
+        return ResponseEntity.ok(postsRepository.findAll());
     }
 
 
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     @ResponseBody
-    public Post show(@PathVariable("id") int id)  {
+    public GetPostDTO show(@PathVariable("id") int id)   {
 
-        return postServis.findOne(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            System.out.println(username);
+            System.out.println( authentication.getPrincipal());
+
+        }
+
+    return postServisImpl.findOne(id) ;
+    }
+
+    @PostMapping("/upload")
+    public String uploadImage( @RequestBody MultipartFile file) throws IOException {
+        StringBuilder fileNames = new StringBuilder();
+        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
+        fileNames.append(file.getOriginalFilename());
+        Files.write(fileNameAndPath, file.getBytes());
+        return "imageupload/index";
     }
 
 
@@ -86,17 +125,16 @@ public class PostController {
     @PostMapping("/del/{id}")
     @ResponseBody
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id)  {
-        postServis.delete(id);
+        postServisImpl.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
 
 
     }
     @ResponseBody
     @PostMapping("/validate")
-    public ResponseEntity<?> validate(@RequestBody @Valid Post post,
+    public ResponseEntity<?> validate(@RequestBody @Valid ValidatePostDTO post,
                                   BindingResult bindingResult){
         postValidator.validate(post,bindingResult);
-        System.out.println(post.getOwner().getId());
         if (bindingResult.hasErrors()) {
 
             List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
@@ -113,24 +151,32 @@ public class PostController {
 
     @ResponseBody
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody @Valid Post post,
-                                             BindingResult bindingResult){
-        postValidator.validate(post,bindingResult);
-        if (bindingResult.hasErrors()) {
-
-            List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
-                    .map(error -> new ValidationErrorDTO(error.getField(), error.getDefaultMessage()))
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.badRequest().body(errors);
-        }
+    public ResponseEntity<?> save(@RequestBody @Valid AddPostDTO post,
+                                             BindingResult bindingResult) throws JsonProcessingException {
 
 
-
-        postServis.save(post,post.getOwner());
+        postServisImpl.save(post);
         return ResponseEntity.ok(HttpStatus.OK);
 
+
+        //        postValidator.validate(post,bindingResult);
+//        if (bindingResult.hasErrors()) {
+//
+//            List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
+//                    .map(error -> new ValidationErrorDTO(error.getField(), error.getDefaultMessage()))
+//                    .collect(Collectors.toList());
+//
+//            return ResponseEntity.badRequest().body(errors);
+//        }
+//
+//
+//
+//        postServisImpl.save(post,post.getOwner());
+//        return ResponseEntity.ok(HttpStatus.OK);
+
     }
+
+
 
     @ResponseBody
     @PostMapping("/testSave")
@@ -143,13 +189,24 @@ public class PostController {
         return addPostDTO;
 
     }
+    @ResponseBody
+    @GetMapping("/huj")
+    public ResponseEntity<?> huk(@RequestBody  AddPostDTO addPostDTO,
+                               BindingResult bindingResult){
 
+        //  System.out.println(addPostDTO.getPost_city());
+
+
+        return ResponseEntity.ok(HttpStatus.OK);
+
+    }
     @ExceptionHandler
     private ResponseEntity<PostErrorResponse> handlException(PostNotFoundException e){
         PostErrorResponse response=new PostErrorResponse("Post with this id wasn't found",System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
     }
+
     @ExceptionHandler
     private ResponseEntity<PostErrorResponse> handlException(PostNotDeleted e){
         PostErrorResponse response=new PostErrorResponse("Post not deleted",System.currentTimeMillis());

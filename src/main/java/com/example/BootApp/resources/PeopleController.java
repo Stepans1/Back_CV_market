@@ -1,17 +1,18 @@
-package com.example.BootApp.controllers;
+package com.example.BootApp.resources;
 
 import com.example.BootApp.DTO.SetOwnerDTO;
+import com.example.BootApp.DTO.ValidationErrorDTO;
 import com.example.BootApp.dao.PersonDAO;
 import com.example.BootApp.models.Person;
-import com.example.BootApp.models.WorkType;
-import com.example.BootApp.secutity.PersonDetails;
 import com.example.BootApp.services.PeopleService;
+import com.example.BootApp.services.impl.PeopleServiceImpl;
 import com.example.BootApp.util.PersonValidator;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("people")
@@ -29,28 +31,22 @@ public class PeopleController {
 
 
 
-    private final PeopleService peopleService;
+    private final PeopleServiceImpl peopleServiceImpl;
     private final PersonValidator personValidator ;
     @Autowired
-    public PeopleController(PersonDAO personDAO, PeopleService peopleService,PersonValidator personValidator){
-        this.peopleService = peopleService;
+    public PeopleController(PersonDAO personDAO, PeopleServiceImpl peopleServiceImpl, PersonValidator personValidator){
+        this.peopleServiceImpl = peopleServiceImpl;
 
         this.personValidator = personValidator;
     }
     @GetMapping("")
     public String index( Model model) throws SQLException {
 
-        model.addAttribute("people",peopleService.findAll());
+        model.addAttribute("people", peopleServiceImpl.findAll());
 
         return "people/index";
     }
-    @GetMapping("/getUserInfo")
-    public String getUserInfo(){
-        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
-        PersonDetails personDetails=(PersonDetails) authentication.getPrincipal();
-        System.out.println(personDetails.getPerson());
-        return "people/index";
-    }
+
 
 
 
@@ -59,17 +55,17 @@ public class PeopleController {
     @GetMapping("/getUsersByName")
     @ResponseBody
     public List<SetOwnerDTO> getUserByName(@RequestParam String name){
-      return peopleService.getByName(name);
+      return peopleServiceImpl.getByName(name);
     }
 
 
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") int id,Model model) throws SQLException {
+    public ResponseEntity<Person> show(@PathVariable("id") int id, Model model) throws SQLException {
 
-        model.addAttribute("person",peopleService.findOne(id));
+        //model.addAttribute("person", peopleServiceImpl.findOne(id));
 
-        return "people/show";
+        return ResponseEntity.ok(peopleServiceImpl.findOne(id));
     }
 
 
@@ -80,22 +76,28 @@ public class PeopleController {
         return "people/new";
     }
 
+    @ResponseBody
     @PostMapping
-    public String create(@ModelAttribute("person")@Valid Person person,
-                         BindingResult bindingResult) throws SQLException {
+    public ResponseEntity<?> create(@RequestBody @Valid Person person,
+                                 BindingResult bindingResult) throws SQLException {
 
         personValidator.validate(person,bindingResult);
-        if (bindingResult.hasErrors()){
-            return "people/new";
+        if (bindingResult.hasErrors()) {
+
+            List<ValidationErrorDTO> errors = bindingResult.getFieldErrors().stream()
+                    .map(error -> new ValidationErrorDTO(error.getField(), error.getDefaultMessage()))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errors);
         }
-        peopleService.save(person);
-        return "redirect:/people";
+        peopleServiceImpl.save(person);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}/edit")
     public String edit(Model model,@PathVariable("id") int id) throws SQLException {
-        model.addAttribute("person",peopleService.findOne(id));
+        model.addAttribute("person", peopleServiceImpl.findOne(id));
         return "people/edit";
     }
 
@@ -108,13 +110,13 @@ public class PeopleController {
         if (bindingResult.hasErrors()){
             return "people/edit";
         }
-        peopleService.update(id,person);
+        peopleServiceImpl.update(id,person);
         return "redirect:/people";
     }
 
     @PostMapping("/del/{id}")
     public String del(@PathVariable("id") int id) throws SQLException {
-        peopleService.del(id);
+        peopleServiceImpl.del(id);
         return "redirect:/people";
     }
 }

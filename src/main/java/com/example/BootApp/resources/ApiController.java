@@ -1,7 +1,7 @@
-package com.example.BootApp.controllers;
+package com.example.BootApp.resources;
 
 import com.example.BootApp.models.Person;
-import com.example.BootApp.services.PeopleService;
+import com.example.BootApp.services.impl.PeopleServiceImpl;
 import com.example.BootApp.util.PostErrorResponse;
 import com.example.BootApp.util.PostNotCreatedException;
 import com.example.BootApp.util.PostNotFoundException;
@@ -17,24 +17,24 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("test")
 public class ApiController {
-    private final PeopleService peopleService;
+    private final PeopleServiceImpl peopleServiceImpl;
 
     @Autowired
-    public ApiController(PeopleService peopleService) {
-        this.peopleService = peopleService;
+    public ApiController(PeopleServiceImpl peopleServiceImpl) {
+        this.peopleServiceImpl = peopleServiceImpl;
     }
 
     @GetMapping()
     public List<Person> getPeople() {
-        return peopleService.findAll(); // Jackson конвертирует эти объекты в JSON
+        return peopleServiceImpl.findAll(); // Jackson конвертирует эти объекты в JSON
     }
 
     @GetMapping("/{id}")
     public Person show(@PathVariable("id") int id) throws SQLException {
 
-        return peopleService.findOne(id);
+        return peopleServiceImpl.findOne(id);
     }
 
     @PostMapping
@@ -49,7 +49,7 @@ public class ApiController {
             }
             throw  new PostNotCreatedException(errorMsg.toString());
         }
-        peopleService.save(person);
+        peopleServiceImpl.save(person);
         return ResponseEntity.ok(HttpStatus.OK);
 
     }

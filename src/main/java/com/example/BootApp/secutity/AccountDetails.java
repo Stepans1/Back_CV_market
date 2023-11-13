@@ -1,55 +1,54 @@
 package com.example.BootApp.secutity;
 
-import com.example.BootApp.models.Person;
+import com.example.BootApp.models.Account;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class PersonDetails implements UserDetails {
-
-    private final Person person;
-
-    public PersonDetails(Person person) {
-        this.person = person;
-    }
+@RequiredArgsConstructor
+public class AccountDetails implements UserDetails {
+    private final Account account;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return null ;
     }
 
     @Override
     public String getPassword() {
-        return this.person.getPassword();
+        return account.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.person.getName();
+        return account.getUsername();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return account.isExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return account.isLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return account.isCredentialsexpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return account.isEnabled();
     }
 
-    public Person getPerson(){
-        return this.person;
+    public Account getAccount(){
+        return this.account;
     }
+
 }
