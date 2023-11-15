@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,16 @@ public class PostController {
         this.postValidator = postValidator;
     }
 
+    @GetMapping("/users")
+    public List<Post> getUsersWithFilter(@RequestParam(name = "username", required = false) String username) {
+        if (username != null) {
+            return postServisImpl.getPostsWithFilter(username);
+        } else {
+            List<String> error=new LinkedList<>();
+            error.add("Post with this parameter not found");
+            return error; // Предположим, что у вас есть метод для получения всех пользователей
+        }
+    }
     @PostMapping("/edit")
     @ResponseBody
     public ResponseEntity<?> updatePost(@RequestBody @Valid Post post ,BindingResult result) {
@@ -189,17 +200,7 @@ public class PostController {
         return addPostDTO;
 
     }
-    @ResponseBody
-    @GetMapping("/huj")
-    public ResponseEntity<?> huk(@RequestBody  AddPostDTO addPostDTO,
-                               BindingResult bindingResult){
 
-        //  System.out.println(addPostDTO.getPost_city());
-
-
-        return ResponseEntity.ok(HttpStatus.OK);
-
-    }
     @ExceptionHandler
     private ResponseEntity<PostErrorResponse> handlException(PostNotFoundException e){
         PostErrorResponse response=new PostErrorResponse("Post with this id wasn't found",System.currentTimeMillis());
