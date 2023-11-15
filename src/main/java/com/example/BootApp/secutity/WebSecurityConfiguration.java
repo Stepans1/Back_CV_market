@@ -57,7 +57,7 @@ public class WebSecurityConfiguration   {
                                 .requestMatchers(HttpMethod.POST, "/api/accounts/*").permitAll()
                                 //.requestMatchers(HttpMethod.GET,"/post/getHeaders").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/post/*").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/post/**").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/people/**").permitAll()
                                 //.requestMatchers(HttpMethod.POST,"/login").permitAll()
 

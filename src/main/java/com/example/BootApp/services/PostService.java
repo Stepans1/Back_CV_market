@@ -22,6 +22,7 @@ public interface PostService {
 
 
 
+
     public List<PostHeaderDTO> headers();
 
     public void delete(int id);

@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.*;
@@ -62,7 +64,7 @@ public class Post {
 
 
     @JsonIgnore
-    @OneToMany(mappedBy = "post"  ,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post"  ,fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Post_atribute> postAtributes;
 
     @NotEmpty(message = "Must be not empty")

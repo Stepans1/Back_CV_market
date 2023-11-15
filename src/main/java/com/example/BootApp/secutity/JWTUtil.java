@@ -20,7 +20,7 @@ public class JWTUtil {
     private String secret;
 
     public String generateToken(Account account){
-        Date expirationDate=Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+        Date expirationDate=Date.from(ZonedDateTime.now().plusMinutes(100).toInstant());
 
 
         List<String> roleNames = account.getRoles()

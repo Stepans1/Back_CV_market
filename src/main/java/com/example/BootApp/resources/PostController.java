@@ -12,6 +12,7 @@ import com.example.BootApp.services.impl.PostServisImpl;
 import com.example.BootApp.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,15 +55,20 @@ public class PostController {
         this.postValidator = postValidator;
     }
 
-    @GetMapping("/users")
-    public List<Post> getUsersWithFilter(@RequestParam(name = "username", required = false) String username) {
-        if (username != null) {
-            return postServisImpl.getPostsWithFilter(username);
-        } else {
-            List<String> error=new LinkedList<>();
-            error.add("Post with this parameter not found");
-            return error; // Предположим, что у вас есть метод для получения всех пользователей
+    @GetMapping("/filter")
+    @ResponseBody
+    public List<Post> getUsersWithFilter(@RequestBody FilterDataDTO dataDTO)  {
+
+        List<Post> result= postServisImpl.getPostsWithFilter(dataDTO);
+        if (result.isEmpty()){
+            throw new EmptyResultAfterFilter();
         }
+        return result;
+
+
+
+
+
     }
     @PostMapping("/edit")
     @ResponseBody
@@ -134,7 +141,7 @@ public class PostController {
 
 
     @PostMapping("/del/{id}")
-    @ResponseBody
+   // @ResponseBody
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id)  {
         postServisImpl.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
@@ -204,6 +211,13 @@ public class PostController {
     @ExceptionHandler
     private ResponseEntity<PostErrorResponse> handlException(PostNotFoundException e){
         PostErrorResponse response=new PostErrorResponse("Post with this id wasn't found",System.currentTimeMillis());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<PostErrorResponse> handlException(EmptyResultAfterFilter e){
+        PostErrorResponse response=new PostErrorResponse("Posts with this settings not found ",System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 
     }

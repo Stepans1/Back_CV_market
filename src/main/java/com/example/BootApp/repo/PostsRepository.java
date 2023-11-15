@@ -5,7 +5,9 @@ import com.example.BootApp.DTO.PostHeaderDTO;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.models.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
@@ -13,11 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostsRepository extends JpaRepository<Post,Integer> {
+public interface PostsRepository extends JpaRepository<Post,Integer>, JpaSpecificationExecutor<Post> {
 
 
     List<Post>findByOwner(Person owner);
 
+//    @Query(value = "SELECT u FROM Post u WHERE :conditions")
+//    List<Post> customQuery(@Param("conditions") String conditions);
 
     @Query("SELECT new com.example.BootApp.DTO.PostHeaderDTO(p.id, p.post_header,p.post_type,p.salary,p.company) FROM Post p")
     List<PostHeaderDTO> selectHeaders();

@@ -91,11 +91,12 @@ public class AccountResource {
         System.out.println(token);
         try {
             String email = jwtUtil.validateTokenAndRetriveClaim(token);
-
+            System.out.println("pidr");
             Account account = accountService.findByUsername(email).orElse(null);
 
             return ResponseEntity.ok(account);
         } catch (JWTVerificationException e) {
+            System.out.println("loh");
             return new ResponseEntity<>("Invalid JWT token", HttpStatus.UNAUTHORIZED);
         }
     }
