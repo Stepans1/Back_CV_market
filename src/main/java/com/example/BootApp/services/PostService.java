@@ -18,7 +18,7 @@ public interface PostService {
 
     public void save(AddPostDTO post) ;
 
-
+    public void getDataForFilerSwitch();
 
 
 

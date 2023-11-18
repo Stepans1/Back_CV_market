@@ -83,20 +83,16 @@ public class AccountResource {
 
     @PostMapping("/validateJWT")
     public ResponseEntity<?> validateJWT(@RequestHeader(name = "Authorization")  Map<String, String> requestBody) {
-        System.out.println("aaaa");
-        System.out.println(requestBody);
+
         String token = requestBody.get("authorization");
         token = token.substring(7);
-        System.out.println(token);
-        System.out.println(token);
+
         try {
             String email = jwtUtil.validateTokenAndRetriveClaim(token);
-            System.out.println("pidr");
             Account account = accountService.findByUsername(email).orElse(null);
 
             return ResponseEntity.ok(account);
         } catch (JWTVerificationException e) {
-            System.out.println("loh");
             return new ResponseEntity<>("Invalid JWT token", HttpStatus.UNAUTHORIZED);
         }
     }

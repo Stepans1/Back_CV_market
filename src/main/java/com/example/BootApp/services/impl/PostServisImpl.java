@@ -102,8 +102,10 @@ public class PostServisImpl implements PostService {
 
     }
 
+    @Override
+    public void getDataForFilerSwitch() {
 
-
+    }
 
 
     public List<PostHeaderDTO> headers() {
