@@ -2,6 +2,7 @@ package com.example.BootApp.resources;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.BootApp.DTO.AuthenticationDTO;
+import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.DTO.ValidationErrorDTO;
 import com.example.BootApp.models.Account;
 import com.example.BootApp.secutity.AccountAuthenticationProvider;
@@ -44,6 +45,16 @@ public class AccountResource {
     private final AccountServiceImpl accountService;
     private final AuthenticationManager authenticationManager;
     private final AccountValidator accountValidator;
+
+
+
+    @GetMapping("/getUsersByName")
+    @ResponseBody
+    public List<SetOwnerDTO> getUserByName(@RequestParam String name){
+        return accountService.getByName(name);
+    }
+
+
 
 
     @PostMapping("/reg")

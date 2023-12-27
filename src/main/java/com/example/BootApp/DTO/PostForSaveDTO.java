@@ -1,5 +1,6 @@
 package com.example.BootApp.DTO;
 
+import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Person;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -41,7 +42,7 @@ public class PostForSaveDTO {
     private String company;
 
     // @NotEmpty(message = "Please chose the owner")
-    private Person owner;
+    private Account owner;
 
 
 

@@ -1,13 +1,12 @@
 package com.example.BootApp.services.impl;
 
 
-import com.example.BootApp.DTO.AddPostDTO;
-import com.example.BootApp.DTO.FilterDataDTO;
-import com.example.BootApp.DTO.GetPostDTO;
-import com.example.BootApp.DTO.PostHeaderDTO;
+import com.example.BootApp.DTO.*;
+import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Post;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post_atribute;
+import com.example.BootApp.repo.AccountRepository;
 import com.example.BootApp.repo.AtributeRepo;
 import com.example.BootApp.repo.PeopleRepositorry;
 import com.example.BootApp.repo.PostsRepository;
@@ -21,9 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,13 +31,16 @@ public class PostServisImpl implements PostService {
     private final AtributeRepo atributeRepo;
 
     private final PeopleRepositorry peopleRepositorry;
-    public PostServisImpl(PostsRepository postsRepository, AtributeRepo atributeRepo, PeopleRepositorry peopleRepositorry) {
+
+    private final AccountRepository accountRepository;
+    public PostServisImpl(PostsRepository postsRepository, AtributeRepo atributeRepo, PeopleRepositorry peopleRepositorry, AccountRepository accountRepository) {
 
 
         this.postsRepository = postsRepository;
 
         this.atributeRepo = atributeRepo;
         this.peopleRepositorry = peopleRepositorry;
+        this.accountRepository = accountRepository;
     }
 
     public List<Post> getPostsWithFilter(FilterDataDTO dataDTO) {
@@ -49,27 +49,6 @@ public class PostServisImpl implements PostService {
        return postsRepository.findAll(spec);
     }
 
-    private String buildConditionsString(String postHeader, String postCity, String postType, String company) {
-        StringBuilder conditions = new StringBuilder();
-
-        if (postHeader != null && !postHeader.isEmpty()) {
-            conditions.append(" AND p.postHeader = '").append(postHeader).append("'");
-        }
-
-        if (postCity != null && !postCity.isEmpty()) {
-            conditions.append(" AND p.postCity = '").append(postCity).append("'");
-        }
-
-        if (postType != null && !postType.isEmpty()) {
-            conditions.append(" AND p.postType = '").append(postType).append("'");
-        }
-
-        if (company != null && !company.isEmpty()) {
-            conditions.append(" AND p.company = '").append(company).append("'");
-        }
-
-        return conditions.toString();
-    }
 
     @Transactional
     @Override
@@ -80,7 +59,6 @@ public class PostServisImpl implements PostService {
         ModelMapper modelMapper=new ModelMapper();
         GetPostDTO getPostDTO=modelMapper.map(foundPost,GetPostDTO.class);
 
-        System.out.println(getPostDTO);
         return getPostDTO;
 
     }
@@ -88,7 +66,7 @@ public class PostServisImpl implements PostService {
     public void save(AddPostDTO post) {
         PostMapperImpl mapper=new PostMapperImpl();
         Post postForSave=  mapper.map(post.getPosts());
-        Person person =peopleRepositorry.findById(post.getPosts().getOwner().getId()).orElse(null);
+        Account person =accountRepository.findById(post.getPosts().getOwner().getId()).orElse(null);
         postForSave.setOwner(person);
         Post savedPost = postsRepository.save(postForSave);
 
@@ -103,7 +81,16 @@ public class PostServisImpl implements PostService {
     }
 
     @Override
-    public void getDataForFilerSwitch() {
+    public DataForSwitchDTO getDataForFilerSwitch() {
+
+      DataForSwitchDTO data=new DataForSwitchDTO();
+
+      data.setCompany(postsRepository.selectDistinctCompany());
+      data.setPostType(postsRepository.selectDistinctType());
+      data.setPostCity(postsRepository.selectDistinctCity());
+      return data;
+//      return postsRepository.selectDataForSwitch();
+
 
     }
 

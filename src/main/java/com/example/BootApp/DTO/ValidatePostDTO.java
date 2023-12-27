@@ -1,5 +1,6 @@
 package com.example.BootApp.DTO;
 
+import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post_atribute;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +29,7 @@ public class ValidatePostDTO {
     private String post_header;
 
     @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
+//    @Size(min = 2,max = 100,message = "LIMIT !!!")
     private String post_city;
 
     @NotEmpty(message ="Must be not empty" )
@@ -59,7 +60,7 @@ public class ValidatePostDTO {
     private String company;
 
    // @NotEmpty(message = "Please chose the owner")
-    private Person owner;
+    private Account owner;
 
 
 

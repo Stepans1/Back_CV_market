@@ -12,9 +12,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        // Формирование пользовательского ответа с более информативным сообщением
-        String errorMessage = "Salary must be number :(";
-        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+        String errorMessage = "Salary must be number";
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_ACCEPTABLE);
     }
 
 

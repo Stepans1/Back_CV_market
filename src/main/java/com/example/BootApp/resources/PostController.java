@@ -11,7 +11,9 @@ import com.example.BootApp.secutity.AccountDetails;
 import com.example.BootApp.services.impl.PostServisImpl;
 import com.example.BootApp.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.micrometer.common.KeyValue;
 import jakarta.validation.Valid;
+import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,12 +27,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +51,9 @@ public class PostController {
 
 
     private final PostValidator postValidator;
-    public static String UPLOAD_DIRECTORY = System.getProperty("BootApp/images") + "/uploads";
+//    public static String UPLOAD_DIRECTORY = System.getProperty("BootApp/images") + "/uploads";
+public static String UPLOAD_DIRECTORY = System.getProperty("test/projekti/BootApp/images") + "/uploads";
+
     @Autowired
     public PostController(PostServisImpl postServisImpl, PostsRepository postsRepository, PeopleRepositorry peopleRepositorry,  PostValidator postValidator) {
         this.postServisImpl = postServisImpl;
@@ -55,7 +64,7 @@ public class PostController {
         this.postValidator = postValidator;
     }
 
-    @GetMapping("/filter")
+    @PostMapping ("/filter")
     @ResponseBody
     public List<Post> getUsersWithFilter(@RequestBody FilterDataDTO dataDTO)  {
 
@@ -93,6 +102,12 @@ public class PostController {
         return WorkType.values();
     }
 
+    @GetMapping("/dataForSwitch")
+    @ResponseBody
+    public ResponseEntity<DataForSwitchDTO> dataForSwitch(){
+        return ResponseEntity.ok(postServisImpl.getDataForFilerSwitch());
+    }
+
 
     @GetMapping("/getHeaders")
     @ResponseBody
@@ -113,26 +128,74 @@ public class PostController {
     @ResponseBody
     public GetPostDTO show(@PathVariable("id") int id)   {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            System.out.println(username);
-            System.out.println( authentication.getPrincipal());
-
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication != null && authentication.isAuthenticated()) {
+//            String username = authentication.getName();
+//            System.out.println(username);
+//            System.out.println( authentication.getPrincipal());
+//
+//        }
 
     return postServisImpl.findOne(id) ;
     }
 
+
     @PostMapping("/upload")
-    public String uploadImage( @RequestBody MultipartFile file) throws IOException {
-        StringBuilder fileNames = new StringBuilder();
-        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
-        fileNames.append(file.getOriginalFilename());
-        Files.write(fileNameAndPath, file.getBytes());
-        return "imageupload/index";
+    @ResponseBody
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file != null && !file.isEmpty()) {
+                // Получение имени файла
+                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                System.out.println(fileName);
+                // Сохранение сжатого изображения на сервере
+                Path path = Paths.get(UPLOAD_DIRECTORY );
+                byte[] fileBytes = file.getBytes();
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes);
+
+                // Чтение изображения
+                BufferedImage originalImage = ImageIO.read(inputStream);
+
+                // Изменение размеров изображения (например, до 200x200)
+                int newWidth = 200;
+                int newHeight = 200;
+                BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, originalImage.getType());
+                Graphics2D g = resizedImage.createGraphics();
+                g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+                g.dispose();
+                System.out.println("qqqqqqqqqqqqqqqqqq");
+                // Сохранение измененного изображения
+                ImageIO.write(resizedImage, "jpg", path.toFile());
+                System.out.println("asasasasas");
+                return ResponseEntity.ok().build();
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
+
+//    @PostMapping("/upload")
+//    @ResponseBody
+//    public ResponseEntity<?> uploadImage( @RequestBody String file) throws IOException {
+////        StringBuilder fileNames = new StringBuilder();
+////        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
+////        fileNames.append(file.getOriginalFilename());
+////        Files.write(fileNameAndPath, file.getBytes());
+//        byte[] bytes = Base64.getDecoder().decode(file.getBytes());
+//        String fileName = UUID.randomUUID().toString();
+//        Path path = Paths.get(UPLOAD_DIRECTORY + fileName);
+//        Files.write(path, bytes);
+//
+////        byte[] bytes = file.getBytes();
+////        Path path = Paths.get(UPLOAD_DIRECTORY + file.getOriginalFilename());
+////        Files.write(path, bytes);
+//
+//        return ResponseEntity.ok(HttpStatus.OK);
+//    }
 
 
 

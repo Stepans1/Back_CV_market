@@ -36,9 +36,9 @@ public class Person {
     @Size(min = 8,max = 30,message = "LIMIT !!!")
     private String yourdescription;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "owner"  ,fetch = FetchType.LAZY)
-    private List<Post> posts;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "owner"  ,fetch = FetchType.LAZY)
+//    private List<Post> posts;
 
     public Person( String username,String yourdescription) {
         this.yourdescription=yourdescription;

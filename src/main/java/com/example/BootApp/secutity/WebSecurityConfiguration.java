@@ -55,6 +55,7 @@ public class WebSecurityConfiguration   {
                     try {
                         auth
                                 .requestMatchers(HttpMethod.POST, "/api/accounts/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/accounts/*").permitAll()
                                 //.requestMatchers(HttpMethod.GET,"/post/getHeaders").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/post/**").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/post/**").permitAll()
@@ -67,14 +68,14 @@ public class WebSecurityConfiguration   {
                               //  .authenticationProvider(authenticationProvider)
                                // .httpBasic(Customizer.withDefaults())
                                 .sessionManagement()
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                                .and()
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//                                .and()
+////                                .formLogin()
+////                                .loginProcessingUrl("/login")
+////                                .disable()
+////                                .logout()
 //                                .formLogin()
-//                                .loginProcessingUrl("/login")
-//                                .disable()
-//                                .logout()
-                                .formLogin()
-                                .disable();
+//                                .disable();
 
 
                                 //.permitAll();

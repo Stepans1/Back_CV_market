@@ -1,5 +1,6 @@
 package com.example.BootApp.services.impl;
 
+import com.example.BootApp.DTO.SetOwnerDTO;
 import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Role;
@@ -33,9 +34,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account createAccount(Account account) {
         account.setPassword(encoder.encode(account.getPassword()));
-        Person person=new Person();
-        person.setUsername(account.getUsername());
-        peopleService.save(person);
+//        Person person=new Person();
+//        person.setUsername(account.getUsername());
+//        peopleService.save(person);
         Role role = roleRepository.findByName("ROLE_USER");
         Set<Role> roles = new HashSet<>();
         roles.add(role);
@@ -51,5 +52,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> getAccounts() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public List<SetOwnerDTO> getByName(String name) {
+        return accountRepository.getPersonForSetOwner(name);
     }
 }

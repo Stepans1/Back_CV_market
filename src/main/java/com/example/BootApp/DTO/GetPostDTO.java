@@ -1,5 +1,6 @@
 package com.example.BootApp.DTO;
 
+import com.example.BootApp.models.Account;
 import com.example.BootApp.models.Person;
 import com.example.BootApp.models.Post_atribute;
 import jakarta.persistence.*;
@@ -54,7 +55,7 @@ public class GetPostDTO {
     private String company;
 
 
-    private Person owner;
+    private Account owner;
 
 
     @Override

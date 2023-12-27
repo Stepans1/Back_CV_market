@@ -30,7 +30,6 @@ public class Post {
     private String post_header;
 
     @NotEmpty(message = "Must be not empty")
-    @Size(min = 2,max = 100,message = "LIMIT !!!")
     @Column(name = "post_city")
     private String post_city;
 
@@ -74,11 +73,11 @@ public class Post {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "person_id",referencedColumnName = "id",nullable = false)
-    private Person owner;
+    private Account owner;
 
     public Post(String post_header, String post_city,
                 String post_type, Date posts_start_day, Date posts_end_day,
-               String post_email,String post_contactPhone,Integer salary,String company,Person owner) {
+               String post_email,String post_contactPhone,Integer salary,String company,Account owner) {
         this.post_header = post_header;
         this.post_city = post_city;
         this.post_type = post_type;
